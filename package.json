@@ -1,0 +1,10 @@
+{
+  "name": "letrando",
+  "version": "1.0.0",
+  "description": "Project made with HTML, CSS, JavaScript to clone Wordle with portuguese words",
+  "main": "index.html",
+  "repository": "https://github.com/caiocezartg/letrando.git",
+  "author": "Caio Cezar <caiocezartg@gmail.com>",
+  "license": "MIT",
+  "dependencies": {}
+}
