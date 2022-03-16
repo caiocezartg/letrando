@@ -1080,11 +1080,35 @@ function flipLetter(tile, index, array, guess) {
 
       if (index === array.length - 1) {
         startInteraction();
-        // checkIfWins(guess, array)
+        checkIfWins(guess);
       }
     },
     { once: true }
   );
+}
+
+function checkIfWins(guess) {
+  if (guess === correctWord) {
+    swal({
+      title: "Você acertou a palavra do dia!",
+      text: `Após 4 tentativas, você acertou a palavra que era ${correctWord.toUpperCase()}`,
+      icon: "success",
+    });
+    stopInteraction();
+    return;
+  }
+
+  const remainingLetters = boardGrid.querySelectorAll(":not([data-letter])");
+
+  if (remainingLetters.length === 0) {
+    swal({
+      title: "Você não conseguiu acertar!",
+      text: `A palavra correta do dia era ${correctWord.toUpperCase()}`,
+      icon: "error",
+    });
+    stopInteraction();
+    return;
+  }
 }
 
 function deleteGuess() {
