@@ -957,7 +957,11 @@ const wordsArray = [
 ];
 
 const wordLength = 5;
+const flipAnimationTime = 500;
+
 const boardGrid = document.querySelector("[data-guess-board]");
+const keyboard = document.querySelector("[data-keyboard]");
+
 const year = new Date().getFullYear();
 const dayOneFromYear = new Date(year, 0, 1);
 const timeFromDate = Date.now() - dayOneFromYear;
@@ -1030,7 +1034,57 @@ function enterGuess() {
       text: "Você precisa preencher todos os espaços.",
       icon: "warning",
     });
+    return;
   }
+
+  const guess = activeLetter.reduce((word, letter) => {
+    return word + letter.dataset.letter;
+  }, "");
+
+  if (!wordsArray.includes(guess)) {
+    swal({
+      title: "Um erro ocorreu!",
+      text: "Essa palavra não existe no dicionário.",
+      icon: "warning",
+    });
+    return;
+  }
+
+  stopInteraction();
+  activeLetter.forEach((...args) => flipLetter(...args, guess));
+}
+
+function flipLetter(tile, index, array, guess) {
+  const letter = tile.dataset.letter;
+  const key = keyboard.querySelector(`[data-key="${letter}"i]`);
+
+  setTimeout(() => {
+    tile.classList.add("flip-letter");
+  }, (index * flipAnimationTime) / 2);
+
+  tile.addEventListener(
+    "transitionend",
+    () => {
+      tile.classList.remove("flip-letter");
+
+      if (correctWord[index] === letter) {
+        tile.dataset.state = "correct";
+        key.classList.add("correct");
+      } else if (correctWord.includes(letter)) {
+        tile.dataset.state = "wrong-location";
+        key.classList.add("wrong-location");
+      } else {
+        tile.dataset.state = "wrong";
+        key.classList.add("wrong");
+      }
+
+      if (index === array.length - 1) {
+        startInteraction();
+        // checkIfWins(guess, array)
+      }
+    },
+    { once: true }
+  );
 }
 
 function deleteGuess() {

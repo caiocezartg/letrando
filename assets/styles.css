@@ -93,6 +93,11 @@ body {
   text-transform: uppercase;
   font-weight: 500;
   user-select: none;
+  transition: transform 250ms linear;
+}
+
+.letter.flip-letter {
+  transform: rotateX(90deg);
 }
 
 .letter[data-state="active"] {
