@@ -1,9 +1,8 @@
-import { correctWord, lowerWordsArray } from "./words-array.js";
+import { todayWord, lowerWordsArray } from "./words-array.js";
 
-console.log(lowerWordsArray.length);
-
-const wordLength = 5;
-const flipAnimationTime = 500;
+const wordLength = 5; //Total length of words
+const flipAnimationTime = 500; //Duration of flip animation;
+let numberOfGuesses = 0;
 
 const boardGrid = document.querySelector("[data-guess-board]");
 const keyboard = document.querySelector("[data-keyboard]");
@@ -20,6 +19,7 @@ function stopInteraction() {
   document.removeEventListener("keydown", handleKey);
 }
 
+//Interaction of user with keyboard created with HTML/CSS
 function handleMouseClick({ target }) {
   if (target.matches("[data-key]")) {
     pressKey(target.dataset.key);
@@ -37,6 +37,7 @@ function handleMouseClick({ target }) {
   }
 }
 
+//Interaction of user with real keyboard
 function handleKey({ key }) {
   if (key === "Enter") {
     enterGuess();
@@ -54,22 +55,24 @@ function handleKey({ key }) {
   }
 }
 
+//After interaction, add a letter to board
 function pressKey(key) {
   const activeLetter = getActiveLetter();
   if (activeLetter.length >= wordLength) return;
 
-  const nextGuess = boardGrid.querySelector(":not([data-letter])");
+  const nextGuess = boardGrid.querySelector(":not([data-letter])"); //Select from board the tiles who still doesn't have letters
   nextGuess.dataset.letter = key.toLowerCase();
   nextGuess.innerText = key;
   nextGuess.dataset.state = "active";
 }
 
+//When press Enter, verify if tiles are fullfilled and word exists, if yes, check the letters
 function enterGuess() {
   const activeLetter = Array.from(getActiveLetter());
   if (activeLetter.length !== wordLength) {
-    swal({
+    Swal.fire({
       title: "Um erro ocorreu!",
-      text: "Você precisa preencher todos os espaços.",
+      html: "Você precisa preencher todos os espaços.",
       icon: "warning",
     });
     return;
@@ -80,21 +83,46 @@ function enterGuess() {
   }, "");
 
   if (!lowerWordsArray.includes(guess)) {
-    swal({
+    Swal.fire({
       title: "Um erro ocorreu!",
-      text: "Essa palavra não existe no dicionário.",
+      html: "Essa palavra não existe em nosso banco de palavras.",
       icon: "warning",
     });
     return;
   }
 
   stopInteraction();
+  numberOfGuesses++;
   activeLetter.forEach((...args) => flipLetter(...args, guess));
 }
 
+//Function to check if the respective letter matches the word
 function flipLetter(tile, index, array, guess) {
   const letter = tile.dataset.letter;
   const key = keyboard.querySelector(`[data-key="${letter}"i]`);
+  const guessLetters = [];
+  let checkWord = todayWord;
+
+  //Uses array from 'activeLetters' and create an object with respective letter and initial state as wrong, pushing to array 'guessLetters'
+  array.forEach((letter) => {
+    guessLetters.push({ letter: letter.dataset.letter, state: "wrong" });
+  });
+
+  //Letter correct = state correct
+  guessLetters.forEach((guess, index) => {
+    if (guess.letter === todayWord[index]) {
+      guess.state = "correct";
+      checkWord = checkWord.replace(guess.letter, "");
+    }
+  });
+
+  //Letter correct in wrong place = state wrong-location
+  guessLetters.forEach((guess) => {
+    if (checkWord.includes(guess.letter) && guess.state != "correct") {
+      guess.state = "wrong-location";
+      checkWord = checkWord.replace(guess.letter, "");
+    }
+  });
 
   setTimeout(() => {
     tile.classList.add("flip-letter");
@@ -104,17 +132,8 @@ function flipLetter(tile, index, array, guess) {
     "transitionend",
     () => {
       tile.classList.remove("flip-letter");
-
-      if (correctWord[index] === letter) {
-        tile.dataset.state = "correct";
-        key.classList.add("correct");
-      } else if (correctWord.includes(letter)) {
-        tile.dataset.state = "wrong-location";
-        key.classList.add("wrong-location");
-      } else {
-        tile.dataset.state = "wrong";
-        key.classList.add("wrong");
-      }
+      tile.dataset.state = guessLetters[index].state;
+      key.classList.add(guessLetters[index].state);
 
       if (index === array.length - 1) {
         startInteraction();
@@ -125,11 +144,12 @@ function flipLetter(tile, index, array, guess) {
   );
 }
 
+//Check if user was capable of guess the right word of today
 function checkIfWins(guess) {
-  if (guess === correctWord) {
-    swal({
-      title: "Você acertou a palavra do dia!",
-      text: `Após 4 tentativas, você acertou a palavra que era ${correctWord.toUpperCase()}`,
+  if (guess === todayWord) {
+    Swal.fire({
+      title: "Você acertou a palavra!",
+      html: `Após ${numberOfGuesses} tentativa(s), você acertou a palavra que é <strong>${todayWord.toUpperCase()}</strong>`,
       icon: "success",
     });
     stopInteraction();
@@ -139,9 +159,9 @@ function checkIfWins(guess) {
   const remainingLetters = boardGrid.querySelectorAll(":not([data-letter])");
 
   if (remainingLetters.length === 0) {
-    swal({
+    Swal.fire({
       title: "Você não conseguiu acertar!",
-      text: `A palavra correta do dia era ${correctWord.toUpperCase()}`,
+      html: `A palavra correta do dia é <strong>${todayWord.toUpperCase()}</strong>`,
       icon: "error",
     });
     stopInteraction();
@@ -149,6 +169,7 @@ function checkIfWins(guess) {
   }
 }
 
+//Delete the last letter from board
 function deleteGuess() {
   const activeLetter = getActiveLetter();
   const activeLetterLength = activeLetter.length;
@@ -160,6 +181,7 @@ function deleteGuess() {
   delete lastLetter.dataset.letter;
 }
 
+//Return all letters there are in board
 function getActiveLetter() {
   return boardGrid.querySelectorAll("[data-state=active]");
 }

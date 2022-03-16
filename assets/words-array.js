@@ -2033,4 +2033,4 @@ export const lowerWordsArray = wordsArray.map((word) =>
     .replace(/[\u0300-\u036f]/g, "")
 );
 
-export const correctWord = lowerWordsArray[Math.floor(daysFromDate)];
+export const todayWord = lowerWordsArray[Math.floor(daysFromDate)];
