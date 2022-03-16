@@ -74,6 +74,8 @@ function enterGuess() {
       title: "Um erro ocorreu!",
       html: "Você precisa preencher todos os espaços.",
       icon: "warning",
+      confirmButtonText: "Fechar",
+      confirmButtonColor: "#064663",
     });
     return;
   }
@@ -87,6 +89,8 @@ function enterGuess() {
       title: "Um erro ocorreu!",
       html: "Essa palavra não existe em nosso banco de palavras.",
       icon: "warning",
+      confirmButtonText: "Fechar",
+      confirmButtonColor: "#064663",
     });
     return;
   }
@@ -151,6 +155,8 @@ function checkIfWins(guess) {
       title: "Você acertou a palavra!",
       html: `Após ${numberOfGuesses} tentativa(s), você acertou a palavra que é <strong>${todayWord.toUpperCase()}</strong>`,
       icon: "success",
+      confirmButtonText: "Fechar",
+      confirmButtonColor: "#064663",
     });
     stopInteraction();
     return;
@@ -163,6 +169,8 @@ function checkIfWins(guess) {
       title: "Você não conseguiu acertar!",
       html: `A palavra correta do dia é <strong>${todayWord.toUpperCase()}</strong>`,
       icon: "error",
+      confirmButtonText: "Fechar",
+      confirmButtonColor: "#064663",
     });
     stopInteraction();
     return;
