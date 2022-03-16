@@ -3,7 +3,8 @@
 
 &#xa0;
 
-  <!-- <a href="https://letrando.netlify.app">Demo</a> -->
+<a href="https://letrando.netlify.app">Demo</a>
+
 </div>
 
 <h1 align="center">Letrando</h1>
